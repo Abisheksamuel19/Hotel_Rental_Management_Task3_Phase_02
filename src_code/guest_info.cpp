@@ -1,0 +1,676 @@
+
+#include "guest_info.h"
+
+
+
+/* FOR RECEPTIONIST */
+
+void guest_info::addguest()
+{
+    system("CLS");
+
+    const char* sql1;
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+
+            double mob_num;
+            string user_name, pwd;
+            string first_name, last_name, mail, city;
+            do
+            {
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*             ADD GUEST INFORMATION          *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl;
+
+                cout << "Enter your First Name          :"; cin >> first_name;
+                cout << "Enter your Last Name           :"; cin >> last_name;
+                cout << "Enter your Mobile Number       :"; cin >> mob_num;
+                cout << "Enter your Email-Id            :"; cin >> mail;
+                cout << "Enter your City                :"; cin >> city;
+
+                cout << endl << endl;
+
+                cout << setw(10) << "**********************************************" << endl;
+                cout << setw(10) << "*           Guest LOGIN-IN Credentials:      *" << endl;
+                cout << setw(10) << "**********************************************" << endl;
+                cout << endl;
+
+                cout << "Please Enter your User-Name    :";cin >> user_name;
+                cout << "Please Enter your Password     :";cin >> pwd;
+
+
+                std::string sql = "insert into guest_info  values(""'" + (first_name)+"'" + "," + "'" + (last_name)+"'" + ", \
+            " + std::to_string(mob_num) + "," + "'" + (mail)+"'" + ", " + "'" + (city)+"'" + ")";
+
+                std::string sql1 = "insert into guest_login  values(""'" + (user_name)+"'" + ", " + "'" + (pwd)+"'" + ")";
+
+                work W(C);
+                W.exec(sql);
+                W.exec(sql1);
+                W.commit();
+                cout << endl;
+                cout << " Do you want to you continue to add Guest Information ... press (y/n)";
+                cin >> c1;
+
+            } while (c1 == 'y');
+
+            cout << "Guest records created successfully" << endl;
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+    }
+
+    showguestInfoMenu();
+
+}
+void guest_info::updateguest_info()
+{
+    system("CLS");
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            do
+            {
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*      UPDATION OF GUEST INFORMATION SCREEN  *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl;
+
+                string u_choice, u_col;
+                double mob_num;
+                cout << "Enter the Mobile number:"; cin >> mob_num;
+                cout << endl;
+
+                cout << "Enter the Field that need to be updated" << endl;;
+
+                cout << "\t=> First_name   " << endl;
+                cout << "\t=> Last_name " << endl;
+                cout << "\t=> Email_id " << endl;
+                cout << "\t=> City " << endl;
+
+
+
+                cout << "Enter your choice of field : ";cin >> u_col;
+
+                if (u_col == "First_name" || u_col == "Last_name" || u_col == "Email_id" || u_col == "City")
+                {
+
+
+                    cout << "Enter the updatation: ";cin >> u_choice;
+
+                    std::string sql = "update guest_info set " + (u_col)+" = " + "'" + (u_choice)+"'" + "  where mobile_number = (" + std::to_string(mob_num) + ")";
+
+                    work W(C);
+
+                    W.exec(sql);
+                    W.commit();
+                    cout << "Do you want to you continue to update ?... press [y/n]";
+                    cin >> c1;
+                }
+                else
+                {
+                    cout << endl;
+                    cout << "Entered Field is incorrect\n";
+                    cout << "Please re-Enter your choice correctly:";
+                    (void)_getch();
+                    showguestInfoMenu();
+
+                }
+            } while (c1 == 'y');
+
+            cout << "Room's Records Updated successfully" << endl;
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+    showguestInfoMenu();
+}
+
+void guest_info ::deleteguest()
+{
+    system("CLS");
+
+    try {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open()) {
+            do
+            {
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*       REMOVING GUEST INFORMATION SCREEN    *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl;
+
+
+                double mob_num;
+                cout << "Enter the Guest Mobile number  :"; cin >> mob_num;
+
+
+                std::string sql = "delete from guest_info where mobile_number = (" + std::to_string(mob_num) + ")";
+
+
+                work W(C);
+
+                W.exec(sql);
+                W.commit();
+                cout << endl;
+                cout << "Do you want to delete Guest Membership  again?... press (y/n)";
+                cin >> c1;
+
+            } while (c1 == 'y');
+            cout << endl;
+            cout << "Guest Membership Records Deleted Successfully" << endl;
+            (void)_getch();
+        }
+        else {
+            cout << "Can't open database" << endl;
+
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+
+    showguestInfoMenu();
+}
+void guest_info::bookroom()
+{
+    char c1;
+    int t = 1;
+    const char* sql1;
+    const char* sql2;
+    system("CLS");
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            do
+            {
+                if (t < 3)
+                {
+                    system("CLS");
+                    cout << setw(60) << "**********************************************" << endl;
+                    cout << setw(60) << "*              ROOM BOOKING SCREEN           *" << endl;
+                    cout << setw(60) << "**********************************************" << endl;
+                    cout << endl;
+                    int room_num, no_person;
+                    double mob_num;
+
+
+                    cout << endl;
+                    cout << "Enter the Mobile number          :"; cin >> mob_num;
+
+                    cout << "Enter the Room number          :"; cin >> room_num;
+
+                    cout << "Enter Number of Person for accomodation   :"; cin >> no_person;
+
+                    std::string sql = "select occupied_status from hotel_rooms_info  where room_number = (" + std::to_string(room_num) + ")";
+                    work W(C);
+                    result R(W.exec(sql));
+                    result::const_iterator  c = R.begin();
+
+
+                    if (c[0].as<string>() == "Yes")
+                    {
+                        cout << endl << "The Room has been already Reserved " << endl;
+                        cout << "Please Try again... " << endl;
+                        (void)_getch();
+                        showguestInfoMenu();
+                    }
+
+
+                    std::string sql1 = "insert into booking_info values(" + std::to_string(mob_num) + "," + std::to_string(room_num) + "," + std::to_string(no_person) + ")";
+
+
+                    std::string sql2 = "update hotel_rooms_info set occupied_status = 'Booked'\
+                where room_number = (" + std::to_string(room_num) + ")";
+
+
+                
+
+                    W.exec(sql1);
+                    W.exec(sql2);
+                    W.commit();
+                    cout << "Do you want to you continue to Book ?... press [y/n]";
+                    cin >> c1;
+                    t++;
+                }
+                else
+                {
+                    cout << endl << endl;
+                    cout << "Booking can be done for 2 Rooms per Guest" << endl;
+                    (void)_getch();
+                    showguestInfoMenu();
+
+                }
+            } while (c1 == 'y');
+
+            cout << "Room Booked successfully" << endl;
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+    showguestInfoMenu();
+}
+void guest_info::cancelbooking()
+{
+
+    char c1;
+    int t = 1;
+
+    const char* sql1;
+    system("CLS");
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            do
+            {
+
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*              CANCEL BOOKING SCREEN         *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl;
+                int room_num, no_person;
+                double mob_num;
+
+
+                cout << endl;
+                cout << "Enter the Mobile number          :"; cin >> mob_num;
+                cout << "Enter the Room number            :"; cin >> room_num;
+
+
+
+
+
+                std::string sql = "delete from booking_info where mobile_Number = (" + std::to_string(mob_num) + ") and  room_allotment=(" + std::to_string(room_num) + ")";
+
+                std::string sql1 = "update hotel_rooms_info set occupied_status = 'No'\
+                            where room_number = (" + std::to_string(room_num) + ")";
+
+
+                work W(C);
+
+                W.exec(sql);
+                W.exec(sql1);
+                W.commit();
+                if (t < 2)
+                {
+                    cout << endl;
+                    cout << "Do you want to you cancel Booked Room again ?... press [y/n]";
+                    cin >> c1;
+                }
+                else
+                {
+
+                    cout << endl;
+                    cout << "Booked Room Cancelation done successfully" << endl;
+
+                    _getch();
+                    showguestInfoMenu();
+
+
+                }
+
+                t++;
+            } while (c1 == 'y');
+
+            cout << "Booked Room Cancelation done successfully" << endl;
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+    showguestInfoMenu();
+}
+
+void guest_info::reserve_info()
+{
+    system("CLS");
+     const char* sql2, *sql3, * sql1;;
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            double mob_num;
+            int room_all;
+            string check_in;
+            do
+            {
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*              RESERVATION OF ROOM           *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl;
+
+                cout << "Enter the Mobile Number       :"; cin >> mob_num;
+                cout << "Enter the Room Number for accommodation :"; cin >> room_all;
+
+                std::string sql = "select occupied_status from hotel_rooms_info  where room_number = (" + std::to_string(room_all) + ")";
+                work W(C);
+                result R(W.exec(sql));
+                result::const_iterator  c = R.begin();
+
+
+                if (c[0].as<string>() == "Yes")
+                {
+                    cout << endl << "The Room has been already Reserved " << endl;
+                    cout << "Please Try again... " << endl;
+                    (void)_getch();
+                    showguestInfoMenu();
+                }
+                else
+                {
+
+                    cout << "Enter the Check-IN Date  [yyyy-mm-dd]      :"; cin >> check_in;
+
+                    std::string sql1 = "update guest_info set check_in_date =(" "'" + (check_in)+"'" + ") \
+                    where mobile_number =(" + std::to_string(mob_num) + ")";
+
+                    std::string sql2 = "update guest_info set room_alloted_number =("+ std::to_string(room_all)+ ") \
+                    where mobile_number =(" + std::to_string(mob_num) + ")";
+
+
+                    std::string sql3 = "update hotel_rooms_info set occupied_status = 'Yes'\
+                where room_number = (" + std::to_string(room_all) + ")";
+
+            
+                    W.exec(sql1);
+                    W.exec(sql2);
+                    W.exec(sql3);
+
+                    W.commit();
+                    cout << endl;
+                    cout << " Do you want to you continue to Reserve again... press (y/n)";
+                    cin >> c1;
+                }
+            } while (c1 == 'y');
+
+            cout << "Room Reserved successfully" << endl;
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+            
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+    }
+
+    showguestInfoMenu();
+}
+void guest_info::check_out()
+{
+    system("CLS");
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            double mob_num, room_all;
+            string  check_out;
+
+
+            do
+            {
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*            GUEST Check-Out SCREEN          *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl;
+
+                cout << "Enter the Alloted Room Number :"; cin >> room_all;
+                cout << "Enter the Mobile Number for Checking-out  :"; cin >> mob_num;
+
+                cout << "Enter the Check-OUT Date [yyyy-mm-dd]     :"; cin >> check_out;
+
+                std::string sql = "update guest_info set check_out_date =(" "'" + (check_out)+"'" + ") \
+                    where mobile_number =(" + std::to_string(mob_num) + ")";
+
+                std::string sql1 = "update hotel_rooms_info  set occupied_status = 'No'\
+                where room_number = (" + std::to_string(room_all) + ")";
+
+                work W(C);
+                W.exec(sql);
+                W.exec(sql1);
+                W.commit();
+                cout << endl;
+                cout << " Do you want to Check-out from another room again ... press (y/n)";
+                cin >> c1;
+
+            } while (c1 == 'y');
+
+            cout << "Guest Checked out successfully" << endl;
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+    }
+
+    showguestInfoMenu();
+}
+
+
+
+int guest_info::vacancy()
+{
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            int t = 1;
+
+
+            do
+            {
+
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*             SEARCHING VACANT ROOMS         *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl << endl;
+
+
+
+                std::string sql = " select Room_Number,room_type,Floor_Number,Room_rent from hotel_rooms_info where occupied_status = 'No'";
+                work W(C);
+                cout << endl << endl;
+
+
+
+                cout << "=====================================================================================" << endl;
+                cout << "|S.No      |  ROOM_NUMBER  |       ROOM_TYPE      |     FLOOR_NUMBER |   ROOM_RENT  |" << endl;
+                cout << "=====================================================================================" << endl;
+                result R(W.exec(sql));
+                for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+                    cout << "|" << t << "\t   |\t" << c[0].as<int>() << "\t   |\t" << setw(10) << c[1].as<string>() << "\t  |\t" << c[2].as<string>() << "\t     |" << " \t" << c[3].as<int>() << "\t    |" << endl;
+                    t++;
+                }
+                cout << "-------------------------------------------------------------------------------------" << endl;
+
+                W.commit();
+                cout << "Do you want to you continue to Search again... press [y/n]";
+                cin >> c1;
+            } while (c1 == 'y');
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+    report();
+
+}
+int guest_info::occupied()
+{
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            int t = 1;
+
+
+            do
+            {
+
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*                 OCCUPIED ROOMS             *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl << endl;
+
+
+                std::string sql = "select a.room_number, b.first_name, a.room_type, a.floor_number, b.mobile_number,\
+                     b.city, b.check_in_date, a.room_rent from hotel_rooms_info as a, guest_info as b\
+                where a.occupied_status = 'Yes' and a.room_number = b.room_alloted_number";
+
+                work W(C);
+                cout << endl << endl;
+
+
+
+                cout << "=============================================================================================================================================================================" << endl;
+                cout << "|S.No      |  ROOM_NUMBER  |     NAME     |         ROOM_TYPE        | FLOOR_NUMBER|    MOBILE_NUMBER     |         CITY          |    Check_IN Date      |   ROOM_RENT     |" << endl;
+                cout << "=============================================================================================================================================================================" << endl;
+                result R(W.exec(sql));
+                for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+                    cout << "|" << t << "\t   |\t" << c[0].as<int>() << "\t   |\t" << c[1].as<string>() << "\t  |\t" << setw(10) << c[2].as<string>() << setw(8) << "\t     |" << " \t" << c[3].as<string>() << "\t   |\t" << c[4].as<double>() << "\t  |\t" << setw(10) << c[5].as<string>() << "\t   |\t" << c[6].as<string>() << "\t  |\t" << c[7].as<int>() << "\t    |" << endl;
+                    t++;
+                }
+
+                cout << "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+
+                W.commit();
+                cout << "Do you want to you continue to Search again... press [y/n]";
+                cin >> c1;
+            } while (c1 == 'y');
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+    report();
+
+}
+int guest_info::history()
+{
+
+    try
+    {
+        connection C("dbname = hotel_rentel_management_system user = postgres password = qwerty port = 5432");
+        if (C.is_open())
+        {
+            int t = 1;
+            do
+            {
+
+                system("CLS");
+                cout << setw(60) << "**********************************************" << endl;
+                cout << setw(60) << "*             ROOM ALLOTMENT HISTORY         *" << endl;
+                cout << setw(60) << "**********************************************" << endl;
+                cout << endl << endl;
+                int room_num;
+                cout << "Enter The Room Number To Search the Room History: "; cin >> room_num;
+
+                std::string sql = "select a.room_number,a.room_type,a.floor_number,b.first_name,b.mobile_number,b.city,b.check_in_date,b.check_out_date,a.room_rent\
+                    from hotel_rooms_info as a, guest_info as b\
+                where a.room_number =(" + std::to_string(room_num) + ") and b.room_alloted_number = (" + std::to_string(room_num) + ")";
+
+                work W(C);
+                cout << endl << endl;
+
+
+
+                cout << "======================================================================================================================================================================" << endl;
+                cout << "|S.No      |  ROOM_NUMBER  |  ROOM_TYPE   |   FLOOR_NUMBER   |    NAME     |    MOBILE_NUMBER     |      CITY      | Check_IN Date|    Check_OUT Date    | ROOM_RENT |" << endl;
+                cout << "======================================================================================================================================================================" << endl;
+                result R(W.exec(sql));
+                for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+                    cout << "|" << t << "\t   |\t" << c[0].as<int>() << "\t   |\t" << c[1].as<string>() << "\t  |\t" << c[2].as<string>() << "\t     |" << " \t" << c[3].as<string>() << "\t   |\t" << c[4].as<double>() << "\t  |\t" << c[5].as<string>() << "\t   |   \t" << c[6].as<string>() << " | \t" << c[7].as<string>() << "\t | " << c[8].as<int>() << "\t     |" << endl;
+                    t++;
+                }
+                cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+
+                W.commit();
+                cout << "Do you want to you continue to Search again... press [y/n]";
+                cin >> c1;
+            } while (c1 == 'y');
+        }
+        else
+        {
+            cout << "Can't open database" << endl;
+
+        }
+    }
+    catch (const std::exception& e) {
+        cerr << e.what() << std::endl;
+
+    }
+    report();
+
+}
